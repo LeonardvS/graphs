@@ -9,6 +9,10 @@ export function getEth() {
   return fetchRequest(`${url}ETH&market=USD&apikey=${key}`);
 }
 
+export function getBCH() {
+  return fetchRequest(`${url}BCH&market=USD&apikey=${key}`);
+}
+
 function fetchRequest(url) {
   return fetch(url)
     .then((res) => (res.status <= 400 ? res : Promise.reject(res)))
