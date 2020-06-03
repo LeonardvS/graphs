@@ -1,39 +1,64 @@
 import React, { useState, useEffect } from 'react';
 import './chart.css';
 
+import { getBTC, getEth } from '../../services/apiClient';
 import { Line } from 'react-chartjs-2';
 
 export default function Chart() {
   const [chartData, setChartData] = useState({});
-  const chart = () => {
+
+  const getData = async () => {
+    const btcResponse = await getBTC();
+    const ethResponse = await getEth();
+
+    const btcDate = [];
+    const btcPrice = [];
+    const ethDate = [];
+    const ethPrice = [];
+
+    for (let key in btcResponse['Time Series (Digital Currency Monthly)']) {
+      btcDate.push(key);
+      btcPrice.push(btcResponse['Time Series (Digital Currency Monthly)'][key]['4a. close (USD)']);
+    }
+
+    for (let key in ethResponse['Time Series (Digital Currency Monthly)']) {
+      ethDate.push(key);
+      ethPrice.push(ethResponse['Time Series (Digital Currency Monthly)'][key]['4a. close (USD)']);
+    }
+
     setChartData({
-      labels: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+      labels: btcDate,
       datasets: [
         {
-          label: "level of thiccness",
-          data: [32, 45, 12, 76, 69],
+          label: "BTC monthly",
+          data: btcPrice,
           backgroundColor: ['rgba(0, 0, 0, 0)'],
-          borderWidth: 2
+          borderWidth: 1,
+          borderColor: 'orange'
         },
         {
-          label: "level of slickness",
-          data: [16, 23, 22, 76, 10],
+          label: "Eth monthly",
+          data: ethPrice,
           backgroundColor: ['rgba(0, 0, 0, 0)'],
-          borderWidth: 2
+          borderWidth: 1,
+          borderColor: '#3c3c3d'
         }
       ]
     });
   }
 
   useEffect(() => {
-    chart();
+    getData();
   }, []);
 
   return (
-    <div className="">
-      <div>
-        <Line data={chartData} />
-      </div>
+    <div className="wrapper">
+      <Line
+        data={chartData}
+        options={{
+          responsive: true
+        }}
+      />
     </div>
   );
 }
